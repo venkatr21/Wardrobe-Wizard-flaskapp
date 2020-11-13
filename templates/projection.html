@@ -9,8 +9,15 @@
 <body>
   <h1>Fashion Recommendation</h1>
   <img src="{{ url_for('video_feed') }}">
-  <form action="/feature" method="post">
-    <button> Generate</button>
+  <h2>
+    {{age}}<br />
+    {{gender}}<br />
+    {{eth}}
+  </h2>
+  <form action="/project" method="post">
+    <input name="name" type="text" placeholder="Your name"></input>
+    <input name="selection" type="text" placeholder="Your Selection"></input>
+    <button> Project</button>
   </form>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
