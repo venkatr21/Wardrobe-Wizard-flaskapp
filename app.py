@@ -92,7 +92,7 @@ def gen(camera):
     while timer > 0:
         frame = camera.get_frame()
         frame = cv2.putText(frame, str(timer//10), (50, 50), cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (255, 255, 0), 2, cv2.LINE_AA)
+                            1.5, (0, 0, 0), 4, cv2.LINE_AA)
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame = jpeg.tobytes()
         timer -= 1
@@ -120,4 +120,4 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=9874, debug=False)
+    app.run(host='localhost', port=5000, debug=True)
