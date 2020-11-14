@@ -55,7 +55,7 @@ pip install -m 'requirements.txt'
 **Running the project**
 
 ```bash
-npm start
+python app.py
 ```
 
 ---
