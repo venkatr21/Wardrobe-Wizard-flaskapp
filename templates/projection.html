@@ -1,25 +1,73 @@
 <html>
 
 <head>
-  <title>Fashion Recommendation</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <title>Wardrobe Wizard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Wardrobe Wizard app">
+  <meta name="author" content="Venkat Ragavan">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-  <h1>Fashion Recommendation</h1>
-  <img src="{{ url_for('video_feed') }}">
-  <h2>
-    {{age}}<br />
-    {{gender}}<br />
-    {{eth}}
-  </h2>
-  <form action="/project" method="post">
-    <input name="name" type="text" placeholder="Your name"></input>
-    <input name="selection" type="text" placeholder="Your Selection"></input>
-    <button> Project</button>
-  </form>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Myntra2</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Men</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Women</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Trendz</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Recommendations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Try-On</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br />
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6">
+        <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('video_feed') }}">
+      </div>
+    </div>
+    <br />
+    <div class="row justify-content-center">
+      <p class="lead"> Recommendation: {{age}}-{{gender}}-{{eth}}</p>
+    </div>
+    <div class="row justify-content-center">
+      <p class="lead"> Cluster: {{cluster}}</p>
+    </div>
+    <div class="row justify-content-center">
+      <form class="form-group" action="/project" method="post">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <input name="name" type="text" class="form-control" placeholder="Your Name">
+          </div>
+          <div class="form-group col-md-6">
+            <input name="selection" type="text" class="form-control" placeholder="Your Selection">
+          </div>
+        </div>
+        <button class="btn btn-outline-success btn-lg">Project on me</button>
+      </form>
+    </div>
+  </div>
+
 </body>
 
 </html>

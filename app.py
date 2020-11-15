@@ -3,12 +3,18 @@ import cv2
 import requests
 from PIL import Image
 from script import predict
+import numpy as np
 from evaluate import execute
 from pose_parser import pose_parse
+import pickle
+from sklearn.cluster import KMeans
 cascPath = "./models/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 app = Flask(__name__)
 flag = True
+kmeansPath = "./models/kmeans.pkl"
+with open(kmeansPath, 'rb') as file:
+    kmeans = pickle.load(file)
 
 
 class VideoCamera(object):
@@ -20,8 +26,8 @@ class VideoCamera(object):
 
     def get_frame(self):
         ret, frame = self.video.read()
-        frame1 = frame[48:433, 176:465]
-        img = cv2.resize(frame1, (192, 256))
+        frame = frame[48:433, 176:465]
+        img = cv2.resize(frame, (192, 256))
         cv2.imwrite('temp.jpg', img)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = faceCascade.detectMultiScale(
@@ -30,11 +36,9 @@ class VideoCamera(object):
             minNeighbors=5,
             minSize=(30, 30)
         )
-        frame1 = frame.copy()
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            cv2.imwrite('face.jpg', frame1[y-10:y+h+10, x:x+w])
-        cv2.rectangle(frame, (176, 48), (464, 432), (0, 255, 0), 2)
+            cv2.imwrite('face.jpg', frame[y-10:y+h+10, x:x+w])
         return frame
 
 
@@ -53,9 +57,20 @@ def feature():
     response.raise_for_status()
     analysis = response.json()
     age = analysis["faces"][0]["age"]
+    age = int(age)-10
     gender = analysis["faces"][0]["gender"]
     ethnicity = analysis["color"]["dominantColors"][0]
-    return render_template('projection.html', age=age, gender=gender, eth=ethnicity)
+    a = 100 if gender == "Female" else -100
+    b = age-2
+    c = age+2
+    if ethnicity == "White":
+        d, e, f = 1, 0, 0
+    elif ethnicity == "Black":
+        d, e, f = 0, 1, 0
+    else:
+        d, e, f = 0, 0, 1
+    cluster = kmeans.predict(np.array([[a, b, c, d, e, f]]))[0]
+    return render_template('projection.html', age=age, gender=gender, eth=ethnicity, cluster=cluster)
 
 
 @app.route('/project', methods=['POST'])
@@ -91,7 +106,7 @@ def gen(camera):
     global video_stream
     while timer > 0:
         frame = camera.get_frame()
-        frame = cv2.putText(frame, str(timer//10), (50, 50), cv2.FONT_HERSHEY_SIMPLEX,
+        frame = cv2.putText(frame, str(timer//10), (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
                             1.5, (0, 0, 0), 4, cv2.LINE_AA)
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame = jpeg.tobytes()

@@ -9,6 +9,7 @@ age-estimation/
 Database/
 env/
 models/
+recommendation/
 output/
 Outputs/
 exp-schp-201908261155-lip.pth

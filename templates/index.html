@@ -8,7 +8,6 @@
   <meta name="author" content="Venkat Ragavan">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -41,19 +40,20 @@
     </div>
   </nav>
   <br />
-  <section id="webcam-sec">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <img class="webcam" style="width :100%; border-radius: 10px;" src="{{ url_for('video_feed') }}">
-        </div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6">
+        <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('video_feed') }}">
       </div>
     </div>
-  </section>
-  <br />
-  <form action="/feature" method="post">
-    <button class="btn btn-success btn-lg">Proceed</button>
-  </form>
+    <br />
+    <div class="row justify-content-center">
+      <form action="/feature" method="post">
+        <button class="btn btn-outline-success btn-lg">Proceed</button>
+      </form>
+    </div>
+  </div>
+
 </body>
 
 </html>
