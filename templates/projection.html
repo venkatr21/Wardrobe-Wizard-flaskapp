@@ -7,21 +7,70 @@
   <meta name="description" content="Wardrobe Wizard app">
   <meta name="author" content="Venkat Ragavan">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #fff;
+      background-color: #f3f3f3;
       font-family: WhitneySSm, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .card-price {
+      display: inline-block;
+      right: 0;
+      width: auto;
+      height: 38px;
+      background-color: #6ab070;
+      -webkit-border-radius: 3px 4px 4px 3px;
+      -moz-border-radius: 3px 4px 4px 3px;
+      border-radius: 3px 4px 4px 3px;
+
+      border-left: 1px solid #6ab070;
+
+      margin-left: 19px;
+
+      position: absolute;
+
+      color: white;
+      font-weight: 300;
+      font-size: 22px;
+      line-height: 38px;
+
+      padding: 0 10px 0 10px;
+    }
+
+    .card-price:before {
+      content: "";
+      position: absolute;
+      display: block;
+      left: -19px;
+      width: 0;
+      height: 0;
+      border-top: 19px solid transparent;
+      border-bottom: 19px solid transparent;
+      border-right: 19px solid #6ab070;
+    }
+
+    .card-price:after {
+      content: "";
+      background-color: white;
+      border-radius: 50%;
+      width: 4px;
+      height: 4px;
+      display: block;
+      position: absolute;
+      left: -9px;
+      top: 17px;
     }
   </style>
 </head>
 
 <body>
   <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <a class="navbar-brand" href="#">Myntra2</a>
+    <a class="navbar-brand" href="/">Wardrobe Wizard</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -54,15 +103,52 @@
     </div>
     <br />
     <div class="row justify-content-center">
-      <p class="lead"> Recommendation: {{age}}-{{gender}}-{{eth}}</p>
+      <form class="form-inline" method="post" action="/feature">
+        <div class="form-group row justify-content-center">
+          <input type="text" class="col-2 mr-2 form-control" id="age" name="age" value="{{age}}">
+          <select class="col-3 mr-2 form-control" id="gender" name="gender">
+            {% if gender=="Male"%}
+            <option selected>Male</option>
+            <option>Female</option>
+            <option>Not Binary</option>
+            {% endif %}
+            {% if gender=="Female"%}
+            <option>Male</option>
+            <option selected>Female</option>
+            <option>Not Binary</option>
+            {% endif %}
+          </select>
+          <select class="col-4 mr-2 form-control" id="eth" name="eth">
+            {% if eth=="White"%}
+            <option selected>White</option>
+            <option>Brown</option>
+            <option>Black</option>
+            {% elif eth=="Black"%}
+            <option>White</option>
+            <option>Brown</option>
+            <option selected>Black</option>
+            {% else %}
+            <option>White</option>
+            <option selected>Brown</option>
+            <option>Black</option>
+            {% endif %}
+          </select>
+          <button type="submit" class="col-1 btn btn-info"><span class="fa fa-search"></span></button>
+        </div>
+      </form>
     </div>
-    <div class="row d-flex flex-row" style=" display: flex;flex-wrap: nowrap;overflow-x: auto;">
+    <div class="row" style="flex-wrap: nowrap; overflow-x: auto;">
       {%for i in range(0,len)%}
       <div class="col-lg-4 col-md-6">
-        <div class="card" id="{{cluster[i]}}">
+        <div style="width:250px; box-shadow:0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;"
+          class="card booking-card" id="{{cluster[i]}}">
           <img class="card-img-top" src="/static/images/{{cluster[i]}}">
+          <p class="card-price">{{desc[i]["price"]}}</p>
+          <hr class="my-4">
           <div class="card-body justify-content-center">
-            <h5 class="card-title">{{cluster[i]}}</h5>
+            <h5 class="card-title">
+              {{desc[i]["title"]}}
+            </h5>
           </div>
         </div>
       </div>
@@ -72,15 +158,18 @@
     <div class="row justify-content-center">
       <div class="col-lg-4 col md-6">
         <div class="form">
-          <form action="/project" method="post">
+          <form action="/cast" method="post">
             <div class="form-row">
               <div class="form-group col-md-6">
-                <input name="name" type="text" class="form-control" placeholder="Your Name">
+                <input hidden name="name" type="text" class="form-control" value="trial">
+                <input hidden id="priceform" name="price" type="text" class="form-control" value="749">
+                <input hidden id="titleform" name="title" type="text" class="form-control" value="749">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group col-md-6">
-                <input id="selection" name="selection" type="text" class="form-control" placeholder="Your Selection">
+                <label id="selectionlab" class="form-control">Your Selection</label>
+                <input hidden type="text" id="selectioninp" name="selection" class="form-control" value="000013">
               </div>
             </div>
             <div class="form-row">
@@ -93,7 +182,26 @@
       </div>
     </div>
   </div>
-  <script src="{{url_for('static', filename='home.js')}}"></script>
+  <script>
+    window.addEventListener("load", function () {
+      title = document.getElementById('titleform')
+      price = document.getElementById('priceform')
+      cardClick = document.querySelectorAll('.card')
+      selectionLab = document.getElementById('selectionlab')
+      selectionInp = document.getElementById('selectioninp')
+      for (let i = 0; i < cardClick.length; i++) {
+        cardClick[i].addEventListener("click", function () {
+          var value = this.id.split("_")[0];
+          selectionLab.innerHTML = value;
+          selectionInp.value = value;
+          cp = this.querySelectorAll('.card-price')
+          ct = this.querySelectorAll('.card-title')
+          title.value = ct[0].innerHTML;
+          price.value = cp[0].innerHTML;
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>

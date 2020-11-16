@@ -9,6 +9,7 @@ from evaluate import execute
 from pose_parser import pose_parse
 import pickle
 from sklearn.cluster import KMeans
+import description
 cascPath = "./models/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 app = Flask(__name__)
@@ -49,31 +50,44 @@ class VideoCamera(object):
 
 @app.route('/')
 def index():
+    global flag
+    flag = True
     return render_template('index.html')
+
+
+@app.route('/final')
+def final():
+    return render_template('final.html')
 
 
 @app.route('/feature', methods=['GET', 'POST'])
 def feature():
-    img1 = open('face.jpg', 'rb').read()
-    headers = {'Ocp-Apim-Subscription-Key': "9467429b1aff4c28be9580ab86b684d7",
-               'Content-Type': 'application/octet-stream'}
-    response = requests.post(
-        "https://cv21.cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=faces,color", headers=headers, data=img1)
-    response.raise_for_status()
-    analysis = response.json()
-    try:
-        age = analysis["faces"][0]["age"]
-    except:
-        age = 23
-    age = int(age)-10
-    try:
-        gender = analysis["faces"][0]["gender"]
-    except:
-        gender = "Male"
-    try:
-        ethnicity = analysis["color"]["dominantColors"][0]
-    except:
-        ethnicity = "Brown"
+    if request.method == "GET":
+        img1 = open('face.jpg', 'rb').read()
+        headers = {'Ocp-Apim-Subscription-Key': "9467429b1aff4c28be9580ab86b684d7",
+                   'Content-Type': 'application/octet-stream'}
+        response = requests.post(
+            "https://cv21.cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=faces,color", headers=headers, data=img1)
+        response.raise_for_status()
+        analysis = response.json()
+        try:
+            age = analysis["faces"][0]["age"]
+        except:
+            age = 23
+        age = int(age)-10
+        try:
+            gender = analysis["faces"][0]["gender"]
+        except:
+            gender = "Male"
+        try:
+            ethnicity = analysis["color"]["dominantColors"][0]
+        except:
+            ethnicity = "Brown"
+    else:
+        age = int(request.form["age"])
+        gender = request.form["gender"]
+        ethnicity = request.form["eth"]
+    print(ethnicity)
     a = 100 if gender == "Female" else -100
     b = age-2
     c = age+2
@@ -84,15 +98,18 @@ def feature():
     else:
         d, e, f = 0, 0, 1
     cluster = kmeans.predict(np.array([[a, b, c, d, e, f]]))[0]
+    print(cluster)
     clusters = os.listdir('./clusters/'+str(cluster))
-    return render_template('projection.html', age=age, gender=gender, eth=ethnicity, cluster=clusters, len=len(clusters))
+    return render_template('projection.html', age=age, gender=gender, eth=ethnicity, cluster=clusters, len=len(clusters), desc=description.desc[cluster])
 
 
-@app.route('/project', methods=['POST'])
-def project():
-    render_template('index.html')
+@app.route('/cast', methods=['POST'])
+def cast():
     name = request.form["name"]
     selection = request.form["selection"]
+    title = request.form["title"]
+    price = request.form["price"]
+    title = title.strip()
     person = Image.open('temp.jpg')
     person.save("./Database/val/person/"+name+".jpg")
     pose_parse(name)
@@ -112,8 +129,8 @@ def project():
     im1 = im1.resize(newsize)
     im1.save("./output/second/TOM/val/" + selection + "_1.jpg")
     result = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
-    result.save("temp.jpg")
-    return render_template('index.html')
+    result.save("data.jpg")
+    return render_template('final.html', sel=selection, title=title, price=price)
 
 
 def gen(camera):
@@ -132,8 +149,8 @@ def gen(camera):
     video_stream.__del__()
 
 
-def gen_stored():
-    img = cv2.imread("temp.jpg")
+def gen_stored(path):
+    img = cv2.imread(path)
     ret, jpeg = cv2.imencode('.jpg', img)
     frame = jpeg.tobytes()
     yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
@@ -147,8 +164,13 @@ def video_feed():
         flag = False
         return Response(gen(video_stream), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
-        return Response(gen_stored(), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(gen_stored("temp.jpg"), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/final_img')
+def final_img():
+    return Response(gen_stored("data.jpg"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    app.run(host='localhost', port=5000, debug=False)

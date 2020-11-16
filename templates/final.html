@@ -47,19 +47,38 @@
       </ul>
     </div>
   </nav>
-  <br />
+  <div class="container ml-2 mt-1">
+    <a href="/feature">
+      <p class="lead">
+        < Back </p>
+    </a>
+  </div>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-4 col-md-6">
-        <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('video_feed') }}">
+        <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('final_img') }}">
       </div>
     </div>
     <br />
     <div class="row justify-content-center">
-      <form action="/feature" method="get">
-        <button class="btn btn-outline-success btn-lg">Proceed</button>
-      </form>
+      <div class="col-8">
+        <div style="box-shadow:0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;" class="card">
+          <img class="card-img-top" height="250px" src="static/images/{{sel}}_1.jpg" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{title}}
+            </h5>
+            <hr>
+            <i id="cartin" style="color:darkgray;" class="fa fa-cart-plus fa-3x"></i>
+            <i id="heartin" style="color:darkgray; margin-left:95px;" class="fa fa-heart fa-3x"></i>
+          </div>
+          <div class="card-footer">
+            <small style="color:rgb(226, 0, 0);" class="text-muted">2 items left in stock!</small>
+          </div>
+        </div>
+      </div>
     </div>
+    <br />
   </div>
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
@@ -91,7 +110,24 @@
       <span class="sr-only">Next</span>
     </a>
   </div>
-
+  <script>
+    heartin = document.getElementById('heartin');
+    heartin.addEventListener("click", function () {
+      if (this.style.color == "red") {
+        this.style.color = "darkgray";
+      } else {
+        this.style.color = "red";
+      }
+    });
+    cartin = document.getElementById('cartin');
+    cartin.addEventListener("click", function () {
+      if (this.style.color == "blue") {
+        this.style.color = "darkgray";
+      } else {
+        this.style.color = "blue";
+      }
+    });
+  </script>
 </body>
 
 </html>
