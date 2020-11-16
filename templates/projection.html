@@ -11,6 +11,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: WhitneySSm, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+  </style>
 </head>
 
 <body>
@@ -31,17 +37,17 @@
           <a class="nav-link" href="#">Trendz</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Recommendations</a>
+          <a class="nav-link active" href="#">Recommendations</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="#">Try-On</a>
+          <a class="nav-link" href="#">Try-On</a>
         </li>
       </ul>
     </div>
   </nav>
   <br />
-  <div class="container">
-    <div class="row justify-content-center">
+  <div class="container" style="overflow-x: scroll;">
+    <div class="row justify-content-center" style="overflow-x: scroll;">
       <div class="col-lg-4 col-md-6">
         <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('video_feed') }}">
       </div>
@@ -50,24 +56,44 @@
     <div class="row justify-content-center">
       <p class="lead"> Recommendation: {{age}}-{{gender}}-{{eth}}</p>
     </div>
-    <div class="row justify-content-center">
-      <p class="lead"> Cluster: {{cluster}}</p>
-    </div>
-    <div class="row justify-content-center">
-      <form class="form-group" action="/project" method="post">
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <input name="name" type="text" class="form-control" placeholder="Your Name">
-          </div>
-          <div class="form-group col-md-6">
-            <input name="selection" type="text" class="form-control" placeholder="Your Selection">
+    <div class="row d-flex flex-row" style=" display: flex;flex-wrap: nowrap;overflow-x: auto;">
+      {%for i in range(0,len)%}
+      <div class="col-lg-4 col-md-6">
+        <div class="card" id="{{cluster[i]}}">
+          <img class="card-img-top" src="/static/images/{{cluster[i]}}">
+          <div class="card-body justify-content-center">
+            <h5 class="card-title">{{cluster[i]}}</h5>
           </div>
         </div>
-        <button class="btn btn-outline-success btn-lg">Project on me</button>
-      </form>
+      </div>
+      {%endfor%}
+    </div>
+    <br>
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col md-6">
+        <div class="form">
+          <form action="/project" method="post">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input name="name" type="text" class="form-control" placeholder="Your Name">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input id="selection" name="selection" type="text" class="form-control" placeholder="Your Selection">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <button class="btn btn-outline-success">Project on me</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-
+  <script src="{{url_for('static', filename='home.js')}}"></script>
 </body>
 
 </html>

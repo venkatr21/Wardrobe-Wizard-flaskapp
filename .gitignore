@@ -12,6 +12,9 @@ models/
 recommendation/
 output/
 Outputs/
+clusters/
+static/images
+static/carousel
 exp-schp-201908261155-lip.pth
 .Python
 build/

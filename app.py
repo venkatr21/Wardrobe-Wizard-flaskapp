@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response, jsonify, request
 import cv2
+import os
 import requests
 from PIL import Image
 from script import predict
@@ -36,10 +37,14 @@ class VideoCamera(object):
             minNeighbors=5,
             minSize=(30, 30)
         )
+        err = False
+        if len(faces) == 0:
+            err = True
         for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
             cv2.imwrite('face.jpg', frame[y-10:y+h+10, x:x+w])
-        return frame
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+        return frame, err
 
 
 @app.route('/')
@@ -56,21 +61,31 @@ def feature():
         "https://cv21.cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=faces,color", headers=headers, data=img1)
     response.raise_for_status()
     analysis = response.json()
-    age = analysis["faces"][0]["age"]
+    try:
+        age = analysis["faces"][0]["age"]
+    except:
+        age = 23
     age = int(age)-10
-    gender = analysis["faces"][0]["gender"]
-    ethnicity = analysis["color"]["dominantColors"][0]
+    try:
+        gender = analysis["faces"][0]["gender"]
+    except:
+        gender = "Male"
+    try:
+        ethnicity = analysis["color"]["dominantColors"][0]
+    except:
+        ethnicity = "Brown"
     a = 100 if gender == "Female" else -100
     b = age-2
     c = age+2
-    if ethnicity == "White":
+    if ethnicity == "White" or ethnicity == "Pink":
         d, e, f = 1, 0, 0
     elif ethnicity == "Black":
         d, e, f = 0, 1, 0
     else:
         d, e, f = 0, 0, 1
     cluster = kmeans.predict(np.array([[a, b, c, d, e, f]]))[0]
-    return render_template('projection.html', age=age, gender=gender, eth=ethnicity, cluster=cluster)
+    clusters = os.listdir('./clusters/'+str(cluster))
+    return render_template('projection.html', age=age, gender=gender, eth=ethnicity, cluster=clusters, len=len(clusters))
 
 
 @app.route('/project', methods=['POST'])
@@ -98,19 +113,20 @@ def project():
     im1.save("./output/second/TOM/val/" + selection + "_1.jpg")
     result = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
     result.save("temp.jpg")
-    return render_template('projection.html')
+    return render_template('index.html')
 
 
 def gen(camera):
     timer = 100
     global video_stream
     while timer > 0:
-        frame = camera.get_frame()
+        frame, err = camera.get_frame()
         frame = cv2.putText(frame, str(timer//10), (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
                             1.5, (0, 0, 0), 4, cv2.LINE_AA)
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame = jpeg.tobytes()
-        timer -= 1
+        if err != True:
+            timer -= 1
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
     video_stream.__del__()
@@ -135,4 +151,4 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug=True)
+    app.run(host='localhost', port=5000)
