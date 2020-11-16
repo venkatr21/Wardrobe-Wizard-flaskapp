@@ -12,6 +12,7 @@ models/
 recommendation/
 output/
 Outputs/
+recommendation/
 clusters/
 static/images
 static/carousel
