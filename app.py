@@ -10,10 +10,15 @@ from pose_parser import pose_parse
 import pickle
 from sklearn.cluster import KMeans
 import description
+import time
 cascPath = "./models/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 app = Flask(__name__)
 flag = True
+name = ""
+selection = ""
+title = ""
+price = ""
 kmeansPath = "./models/kmeans.pkl"
 with open(kmeansPath, 'rb') as file:
     kmeans = pickle.load(file)
@@ -105,31 +110,12 @@ def feature():
 
 @app.route('/cast', methods=['POST'])
 def cast():
+    global name, selection, title, price
     name = request.form["name"]
     selection = request.form["selection"]
     title = request.form["title"]
     price = request.form["price"]
     title = title.strip()
-    person = Image.open('temp.jpg')
-    person.save("./Database/val/person/"+name+".jpg")
-    pose_parse(name)
-    execute()
-    f = open("./Database/val_pairs.txt", "w")
-    f.write(name+".jpg "+selection+"_1.jpg")
-    f.close()
-    predict()
-    im = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
-    width, height = im.size
-    left = width / 3
-    top = 2 * height / 3
-    right = width
-    bottom = height
-    im1 = im.crop((left, top, right, bottom))
-    newsize = (600, 450)
-    im1 = im1.resize(newsize)
-    im1.save("./output/second/TOM/val/" + selection + "_1.jpg")
-    result = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
-    result.save("data.jpg")
     return render_template('final.html', sel=selection, title=title, price=price)
 
 
@@ -169,6 +155,27 @@ def video_feed():
 
 @app.route('/final_img')
 def final_img():
+    global name, selection
+    person = Image.open('temp.jpg')
+    person.save("./Database/val/person/"+name+".jpg")
+    pose_parse(name)
+    execute()
+    f = open("./Database/val_pairs.txt", "w")
+    f.write(name+".jpg "+selection+"_1.jpg")
+    f.close()
+    predict()
+    im = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
+    width, height = im.size
+    left = width / 3
+    top = 2 * height / 3
+    right = width
+    bottom = height
+    im1 = im.crop((left, top, right, bottom))
+    newsize = (600, 450)
+    im1 = im1.resize(newsize)
+    im1.save("./output/second/TOM/val/" + selection + "_1.jpg")
+    result = Image.open("./output/second/TOM/val/" + selection + "_1.jpg")
+    result.save("data.jpg")
     return Response(gen_stored("data.jpg"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 

@@ -18,6 +18,19 @@
       font-family: WhitneySSm, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
+    #content {
+      display: none;
+    }
+
+    #loading {
+      margin-left: 34%;
+      position: absolute;
+      z-index: 1000;
+      width: 30%;
+      height: 30%;
+      cursor: wait;
+    }
+
     .card-price {
       display: inline-block;
       right: 0;
@@ -95,7 +108,10 @@
     </div>
   </nav>
   <br />
-  <div class="container" style="overflow-x: scroll;">
+  <div id="loading" class="container-fluid">
+    <img class="ml-20 img-fluid rounded" src="/static/carousel/loader.gif">
+  </div>
+  <div id="content" class="container" style="overflow-x: scroll;">
     <div class="row justify-content-center" style="overflow-x: scroll;">
       <div class="col-lg-4 col-md-6">
         <img class="img-fluid rounded" style="width: 100%; border: 3px solid black;" src="{{ url_for('video_feed') }}">
@@ -151,10 +167,10 @@
             </h5>
           </div>
         </div>
+        <br>
       </div>
       {%endfor%}
     </div>
-    <br>
     <div class="row justify-content-center">
       <div class="col-lg-4 col md-6">
         <div class="form">
@@ -183,7 +199,12 @@
     </div>
   </div>
   <script>
+    function preloader() {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("content").style.display = "block";
+    }
     window.addEventListener("load", function () {
+      preloader();
       title = document.getElementById('titleform')
       price = document.getElementById('priceform')
       cardClick = document.querySelectorAll('.card')
