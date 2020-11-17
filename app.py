@@ -65,6 +65,16 @@ def final():
     return render_template('final.html')
 
 
+@app.route('/men')
+def men():
+    return render_template('men.html')
+
+
+@app.route('/women')
+def women():
+    return render_template('women.html')
+
+
 @app.route('/feature', methods=['GET', 'POST'])
 def feature():
     if request.method == "GET":
