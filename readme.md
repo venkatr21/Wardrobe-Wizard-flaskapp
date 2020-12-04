@@ -65,6 +65,7 @@ python app.py
 ## Documentation
 
 Documentation Section will be updated soon.
+You might need the models folder to run the application, ping me @ <a href="https://www.linkedin.com/in/venkat-ragavan-29952118b/">Linked In </a>
 
 ---
 
