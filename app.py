@@ -79,7 +79,7 @@ def women():
 def feature():
     if request.method == "GET":
         img1 = open('face.jpg', 'rb').read()
-        headers = {'Ocp-Apim-Subscription-Key': "9467429b1aff4c28be9580ab86b684d7",
+        headers = {'Ocp-Apim-Subscription-Key': "//key",
                    'Content-Type': 'application/octet-stream'}
         response = requests.post(
             "https://cv21.cognitiveservices.azure.com/vision/v3.1/analyze?visualFeatures=faces,color", headers=headers, data=img1)
